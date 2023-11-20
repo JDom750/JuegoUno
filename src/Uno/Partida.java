@@ -135,7 +135,7 @@ public class Partida {
     public boolean cartaValida(Carta c){
         return c.getColor() == colorValido || c.getNumero() == numeroValido;
     }
-    public void esTurno(String pid) throws InvaldPlayerTurnException{
+    public void esTurno(String pid) throws InvalidPlayerTurnException{
         if(this.idJugadores[this.jugadorActual] != pid){
             throw new InvalidPlayerTurnException("No es el turno de "+ pid, pid);
         }
@@ -178,14 +178,14 @@ public class Partida {
                     JLabel message = new JLabel("movimiento invalido, color esperado: "+ colorValido + " pero se ingreso el color "+carta.getColor());
                     message.setFont(new Font("Arial", Font.BOLD, 48));
                     JOptionPane.showMessageDialog(null, message);
-                    throw new InvalidColorSubmissionException(message, actual,esperado);
+                    throw new InvalidColorSubmissionException("movimiento invalido, color esperado: "+ colorValido + " pero se ingreso el color "+carta.getColor(), carta.getColor(),colorValido);
 
                 }
                 else if(carta.getNumero()!= numeroValido){
                     JLabel message2 = new JLabel("movimiento invalido, numero esperado: "+ numeroValido + " pero se ingreso el numero "+carta.getNumero());
                     message2.setFont(new Font("Arial", Font.BOLD, 48));
                     JOptionPane.showMessageDialog(null, message2);
-                    throw new InvalidValueSubmissionException(message2, actual, esperado);
+                    throw new InvalidValueSubmissionException("movimiento invalido, numero esperado: "+ numeroValido + " pero se ingreso el numero "+carta.getNumero(), carta.getNumero(), numeroValido);
                 }
             }
 
