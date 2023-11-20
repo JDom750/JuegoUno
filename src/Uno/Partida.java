@@ -213,7 +213,7 @@ public class Partida {
             }
 
             if(carta.getColor() == Carta.Color.NEGRO){
-                colorValido = declaredColor;
+                colorValido = colorDeclarado;
             }
 
             if(carta.getNumero() == Carta.Numero.MASDOS){
