@@ -169,7 +169,101 @@ public class Partida {
             ArrayList<Carta> manoJu = obtManoJugador(pid);
 
             if(!cartaValida(carta)){
+                if(carta.getColor() == Carta.Color.NEGRO){
+                    colorValido = carta.getColor();
+                    numeroValido = carta.getNumero();
+                }
 
+                if (carta.getColor() != colorValido){
+                    JLabel message = new JLabel("movimiento invalido, color esperado: "+ colorValido + " pero se ingreso el color "+carta.getColor());
+                    message.setFont(new Font("Arial", Font.BOLD, 48));
+                    JOptionPane.showMessageDialog(null, message);
+                    throw new InvalidColorSubmissionException(message, actual,esperado);
+
+                }
+                else if(carta.getNumero()!= numeroValido){
+                    JLabel message2 = new JLabel("movimiento invalido, numero esperado: "+ numeroValido + " pero se ingreso el numero "+carta.getNumero());
+                    message2.setFont(new Font("Arial", Font.BOLD, 48));
+                    JOptionPane.showMessageDialog(null, message2);
+                    throw new InvalidValueSubmissionException(message2, actual, esperado);
+                }
+            }
+
+            manoJu.remove(carta);
+
+            if(manoVacia(this.idJugadores[jugadorActual])){
+                JLabel message3 = new JLabel("El jugador actual: "+ this.idJugadores[jugadorActual] +" gano ");
+                message3.setFont(new Font("Arial", Font.BOLD, 48));
+                JOptionPane.showMessageDialog(null, message3);
+                System.exit(0);
+            }
+
+            colorValido = carta.getColor();
+            numeroValido = carta.getNumero();
+            pila.add(carta);
+
+            if(gameDirection == false){
+                jugadorActual = (jugadorActual +1)% idJugadores.length;
+            }
+            else if (gameDirection == true){
+                jugadorActual = (jugadorActual -1)% idJugadores.length;
+                if(jugadorActual == -1){
+                    jugadorActual = idJugadores.length-1;
+                }
+            }
+
+            if(carta.getColor() == Carta.Color.NEGRO){
+                colorValido = declaredColor;
+            }
+
+            if(carta.getNumero() == Carta.Numero.MASDOS){
+                pid= idJugadores[jugadorActual];
+                obtManoJugador(pid).add(mazo.robarCarta());
+                obtManoJugador(pid).add(mazo.robarCarta());
+                JLabel ms = new JLabel(pid +"Tomo 2 cartas");
+            }
+            if (carta.getNumero() == Carta.Numero.MASCUATRO){
+                pid= idJugadores[jugadorActual];
+                obtManoJugador(pid).add(mazo.robarCarta());
+                obtManoJugador(pid).add(mazo.robarCarta());
+                obtManoJugador(pid).add(mazo.robarCarta());
+                obtManoJugador(pid).add(mazo.robarCarta());
+                JLabel ms = new JLabel(pid +"Tomo 4 cartas");
+
+            }
+            if(carta.getNumero() == Carta.Numero.SALTARSE){
+                JLabel message = new JLabel(idJugadores[jugadorActual]+" fue salteado");
+                message.setFont(new Font("Arial",Font.BOLD,48));
+                JOptionPane.showMessageDialog(null, message);
+                if(gameDirection == false){
+                    jugadorActual = (jugadorActual+1)%idJugadores.length;
+                }
+                else if(gameDirection == true){
+                    jugadorActual = (jugadorActual-1)%idJugadores.length;
+                    if(jugadorActual == -1){
+                        jugadorActual = idJugadores.length -1;
+                    }
+                }
+            }
+
+            if(carta.getNumero()==Carta.Numero.CAMBIOSENTIDO){
+                JLabel message = new JLabel("La Direccion del juego fue invertida por: "+ pid);
+                message.setFont(new Font("Arial",Font.BOLD,48));
+                JOptionPane.showMessageDialog(null, message);
+
+                gameDirection ^= true;
+                if(gameDirection == true){
+                    jugadorActual = (jugadorActual -2)%idJugadores.length;
+                    if (jugadorActual==-1){
+                        jugadorActual= idJugadores.length -1;
+                    }
+                    if (jugadorActual==-2){
+                        jugadorActual= idJugadores.length -2;
+                    }
+                }
+                else if(gameDirection==false){
+                    jugadorActual=(jugadorActual+2)% idJugadores.length;
+                }
             }
     }
 }
