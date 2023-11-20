@@ -78,11 +78,132 @@ public class Partida {
             JLabel mensaje = new JLabel(idJugadores[jugadorActual] + "El sentido cambio");
             mensaje.setFont(new Font("Arial", Font.BOLD, 48));
             JOptionPane.showMessageDialog(null, mensaje);
+            //XOR or equal
             gameDirection ^=true;
             jugadorActual = idJugadores.length -1;
         }
         pila.add(carta);
     }
+
+    public Carta levantarCarta(){
+        return new Carta(colorValido, numeroValido);
+    }
+
+    public ImageIcon robarImagenCarta(){
+        return new ImageIcon(colorValido +"-" + numeroValido +".png");
+    }
+
+    public boolean TerminoElJuego(){
+        for(String jugador : this.idJugadores){
+            if(manoVacia(jugador)){
+                return true;
+            }
+        }
+        return false;
+    }
+    public String obtenerJugadorActual(){
+        return this.idJugadores[this.jugadorActual];
+    }
+
+    public String jugadorAnterior(int i){
+        int index = this.jugadorActual -1;
+        if (index==-1){
+            index=idJugadores.length -1;
+        }
+        return this.idJugadores[index];
+    }
+    public String[] obtJugadores(){
+        return idJugadores;
+    }
+    public  ArrayList<Carta> obtManoJugador(String pid){
+        int index= Arrays.asList(idJugadores).indexOf(pid);
+        return manos.get(index);
+    }
+
+    public int tamManoJugador(String pid){
+        return obtManoJugador(pid).size();
+    }
+
+    public Carta obtCartaJugador(String pid, int o){
+        ArrayList<Carta> manoJ = obtManoJugador(pid);
+        return manoJ.get(o);
+    }
+    public boolean manoVacia(String pid){
+        return obtManoJugador(pid).isEmpty();
+    }
+
+    public boolean cartaValida(Carta c){
+        return c.getColor() == colorValido || c.getNumero() == numeroValido;
+    }
+    public void esTurno(String pid) throws InvaldPlayerTurnException{
+        if(this.idJugadores[this.jugadorActual] != pid){
+            throw new InvalidPlayerTurnException("No es el turno de "+ pid, pid);
+        }
+    }
+    public void tomarCarta(String pid) throws InvalidPlayerTurnException {
+        esTurno(pid);
+
+        if(mazo.estaVacio()){
+            mazo.reemplazarMazoCon(pila);
+            mazo.barajar();
+        }
+        obtManoJugador(pid).add(mazo.robarCarta());
+        if(gameDirection == false) {
+            jugadorActual = (jugadorActual +1) % idJugadores.length;
+        }
+        else if(gameDirection == true){
+            jugadorActual = (jugadorActual-1)%idJugadores.length;
+            if (jugadorActual ==-1){
+                jugadorActual = idJugadores.length -1;
+            }
+        }
+    }
+    public void setColorDeCarta(Carta.Color c){
+        colorValido = c;
+    }
+
+    public void tomarCartaJugador(String pid, Carta carta, Carta.Color colorDeclarado)
+        throws InvalidColorSubmissionException, InvalidValueSubmissionException, InvalidPlayerTurnException{
+            esTurno(pid);
+
+            ArrayList<Carta> manoJu = obtManoJugador(pid);
+
+            if(!cartaValida(carta)){
+
+            }
+    }
 }
 
 //---------------------------------------
+class InvalidPlayerTurnException extends Exception {
+    String id_jugador;
+
+    public InvalidPlayerTurnException (String m, String pid){
+        super(m);
+        id_jugador=pid;
+    }
+
+    public String getPid() {
+        return id_jugador;
+    }
+}
+
+class InvalidColorSubmissionException extends Exception {
+    private Carta.Color esperado;
+    private Carta.Color actual;
+
+    public InvalidColorSubmissionException(String m, Carta.Color actual, Carta.Color esperado){
+        this.actual = actual;
+        this.esperado = esperado;
+    }
+}
+
+class InvalidValueSubmissionException extends Exception {
+    private Carta.Numero esperado;
+    private Carta.Numero actual;
+
+    public InvalidValueSubmissionException(String m, Carta.Numero actual, Carta.Numero esperado){
+        this.actual = actual;
+        this.esperado = esperado;
+    }
+}
