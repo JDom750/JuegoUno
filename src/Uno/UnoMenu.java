@@ -9,11 +9,11 @@ public class UnoMenu {
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            MostrarMenu();
+            mostrarMenuInicio(new UnoController());
         });
     }
 
-    public static void MostrarMenu() {
+    public static void mostrarMenuInicio(UnoController controller) {
         JFrame frame = new JFrame("Menú UNO");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(400, 300);
@@ -35,12 +35,7 @@ public class UnoMenu {
                 if (cantidadJugadores > 0) {
                     String[] jugadores = obtenerNombresJugadores(cantidadJugadores);
                     if (jugadores != null) {
-                        UnoController controller = new UnoController();
                         controller.iniciarJuego(jugadores);
-
-                        UnoView view = new UnoView(controller.getPartida(), controller);
-                        view.mostrarVentana();
-
                         frame.dispose();
                     }
                 }

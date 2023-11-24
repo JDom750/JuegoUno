@@ -96,6 +96,7 @@ public class UnoView {
         for (String jugador : controller.getPartida().obtJugadores()) {
             infoTextArea.append(jugador + ": " + cartasEnMano(jugador) + " cartas\n");
         }
+        partida.start(partida);//VER QUE PASA
 
         infoTextArea.append("\nÚltima carta jugada:\n" + partida.levantarCarta());
     }
