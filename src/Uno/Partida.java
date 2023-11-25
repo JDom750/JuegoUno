@@ -295,11 +295,13 @@ public class Partida {
             System.out.println("El jugador actual: " + this.idJugadores[jugadorActual] + " ganó.");
             System.exit(0);
         }
-
+/*
         // Actualizamos numeroValido solo si la carta no es de color NEGRO
         if (carta.getColor() != Carta.Color.NEGRO) {
             numeroValido = carta.getNumero();
         }
+ */
+        numeroValido = carta.getNumero();
 
         actualizarTurno();
 
