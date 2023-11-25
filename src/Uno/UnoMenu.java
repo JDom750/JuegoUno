@@ -1,92 +1,98 @@
 package Uno;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.util.Scanner;
 
 public class UnoMenu {
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            mostrarMenuInicio(new UnoController());
-        });
+        UnoController controller = new UnoController();
+        mostrarMenuInicio(controller);
     }
 
     public static void mostrarMenuInicio(UnoController controller) {
-        JFrame frame = new JFrame("Menú UNO");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(400, 300);
+        Scanner scanner = new Scanner(System.in);
 
-        JPanel panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        System.out.println("=== MENÚ UNO ===");
+        System.out.println("1. Iniciar Juego Manualmente");
+        System.out.println("2. Iniciar Juego Automático");
+        System.out.println("3. Salir");
 
-        JLabel tituloLabel = new JLabel("UNO");
-        tituloLabel.setFont(new Font("Arial", Font.BOLD, 24));
-        tituloLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        int opcion = obtenerOpcion(scanner);
 
-        JButton iniciarJuegoButton = new JButton("Iniciar Juego");
-        JButton salirButton = new JButton("Salir");
-
-        iniciarJuegoButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                int cantidadJugadores = obtenerCantidadJugadores();
+        switch (opcion) {
+            case 1:
+                int cantidadJugadores = obtenerCantidadJugadores(scanner);
                 if (cantidadJugadores > 0) {
-                    String[] jugadores = obtenerNombresJugadores(cantidadJugadores);
+                    String[] jugadores = obtenerNombresJugadores(scanner, cantidadJugadores);
                     if (jugadores != null) {
                         controller.iniciarJuego(jugadores);
-                        frame.dispose();
                     }
                 }
-            }
-        });
-
-        salirButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
+                break;
+            case 2:
+                int cantidadJugadoresAuto = obtenerCantidadJugadores(scanner);
+                if (cantidadJugadoresAuto > 0) {
+                    String[] jugadoresAuto = obtenerNombresJugadores(scanner, cantidadJugadoresAuto);
+                    if (jugadoresAuto != null) {
+                        controller.iniciarJuegoAutomatico(jugadoresAuto);
+                    }
+                }
+                break;
+            case 3:
                 System.exit(0);
-            }
-        });
-
-        panel.add(Box.createVerticalStrut(20));  // Separación
-        panel.add(tituloLabel);
-        panel.add(Box.createVerticalStrut(20));  // Separación
-        panel.add(iniciarJuegoButton);
-        panel.add(Box.createVerticalStrut(20));  // Separación
-        panel.add(salirButton);
-
-        frame.add(panel);
-        frame.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
-        frame.setVisible(true);
-    }
-
-    private static int obtenerCantidadJugadores() {
-        String cantidadJugadoresStr = JOptionPane.showInputDialog("Ingrese la cantidad de jugadores (2-10):");
-        try {
-            int cantidadJugadores = Integer.parseInt(cantidadJugadoresStr);
-            if (cantidadJugadores >= 2 && cantidadJugadores <= 10) {
-                return cantidadJugadores;
-            } else {
-                JOptionPane.showMessageDialog(null, "Ingrese un número de jugadores válido (entre 2 y 10).", "Error", JOptionPane.ERROR_MESSAGE);
-                return -1;
-            }
-        } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(null, "Ingrese un número válido para la cantidad de jugadores.", "Error", JOptionPane.ERROR_MESSAGE);
-            return -1;
+                break;
+            default:
+                System.out.println("Opción no válida.");
         }
+
+        scanner.close();
     }
 
-    private static String[] obtenerNombresJugadores(int cantidad) {
+    private static int obtenerOpcion(Scanner scanner) {
+        System.out.print("Seleccione una opción: ");
+        while (!scanner.hasNextInt()) {
+            System.out.println("Ingrese un número válido.");
+            System.out.print("Seleccione una opción: ");
+            scanner.next();
+        }
+        return scanner.nextInt();
+    }
+
+    private static int obtenerCantidadJugadores(Scanner scanner) {
+        int cantidadJugadores = -1;
+
+        while (cantidadJugadores < 2 || cantidadJugadores > 10) {
+            System.out.print("Ingrese la cantidad de jugadores (2-10): ");
+            while (!scanner.hasNextInt()) {
+                System.out.println("Ingrese un número válido.");
+                System.out.print("Ingrese la cantidad de jugadores (2-10): ");
+                scanner.next();
+            }
+            cantidadJugadores = scanner.nextInt();
+
+            if (cantidadJugadores < 2 || cantidadJugadores > 10) {
+                System.out.println("Ingrese un número de jugadores válido (entre 2 y 10).");
+            }
+        }
+
+        return cantidadJugadores;
+    }
+
+    private static String[] obtenerNombresJugadores(Scanner scanner, int cantidad) {
         String[] jugadores = new String[cantidad];
+
         for (int i = 0; i < cantidad; i++) {
-            String nombre = JOptionPane.showInputDialog("Ingrese el nombre del Jugador " + (i + 1) + ":");
-            if (nombre == null || nombre.trim().isEmpty()) {
-                JOptionPane.showMessageDialog(null, "Ingrese un nombre válido para todos los jugadores.", "Error", JOptionPane.ERROR_MESSAGE);
+            System.out.print("Ingrese el nombre del Jugador " + (i + 1) + ": ");
+            String nombre = scanner.next().trim();
+
+            if (nombre.isEmpty()) {
+                System.out.println("Ingrese un nombre válido para todos los jugadores.");
                 return null;
             }
+
             jugadores[i] = nombre;
         }
+
         return jugadores;
     }
 }

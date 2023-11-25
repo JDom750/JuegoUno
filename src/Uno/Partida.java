@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Scanner;
 
 public class Partida {
     /*
@@ -85,6 +86,10 @@ public class Partida {
         pila.add(carta);
     }
 
+    /**
+     * Muestra la carta de la pila
+     * @return
+     */
     public Carta levantarCarta(){
         return new Carta(colorValido, numeroValido);
     }
@@ -161,7 +166,7 @@ public class Partida {
     public void setColorDeCarta(Carta.Color c){
         colorValido = c;
     }
-
+/*
     public void tomarCartaJugador(String pid, Carta carta, Carta.Color colorDeclarado)
         throws InvalidColorSubmissionException, InvalidValueSubmissionException, InvalidPlayerTurnException{
             esTurno(pid);
@@ -169,7 +174,7 @@ public class Partida {
             ArrayList<Carta> manoJu = obtManoJugador(pid);
 
             if(!cartaValida(carta)){
-                if(carta.getColor() == Carta.Color.NEGRO){
+                if(carta.getColor() == Carta.Color.NEGRO){ //el que juega la carta negra tienen que elegir un colorvalido != NEGRO
                     colorValido = carta.getColor();
                     numeroValido = carta.getNumero();
                 }
@@ -197,7 +202,7 @@ public class Partida {
                 JOptionPane.showMessageDialog(null, message3);
                 System.exit(0);
             }
-
+            // if Color == NEGRO entonces el que jugo la carta tiene que seleccionar cual sera el color valido a partir de ahora
             colorValido = carta.getColor();
             numeroValido = carta.getNumero();
             pila.add(carta);
@@ -268,6 +273,131 @@ public class Partida {
     }
 }
 
+ */
+
+    public void tomarCartaJugador(String pid, Carta carta, Carta.Color colorDeclarado)
+            throws InvalidColorSubmissionException, InvalidValueSubmissionException, InvalidPlayerTurnException {
+        esTurno(pid);
+
+        ArrayList<Carta> manoJu = obtManoJugador(pid);
+
+        if (!cartaValida(carta)) {
+            if (carta.getColor() == Carta.Color.NEGRO) {
+                solicitarColor();
+            } else {
+                validarCarta(carta);
+            }
+        }
+
+        manoJu.remove(carta);
+
+        if (manoVacia(this.idJugadores[jugadorActual])) {
+            System.out.println("El jugador actual: " + this.idJugadores[jugadorActual] + " ganó.");
+            System.exit(0);
+        }
+
+        // Actualizamos numeroValido solo si la carta no es de color NEGRO
+        if (carta.getColor() != Carta.Color.NEGRO) {
+            numeroValido = carta.getNumero();
+        }
+
+        actualizarTurno();
+
+        if (carta.getColor() == Carta.Color.NEGRO) {
+            colorValido = colorDeclarado;
+        }
+
+        manejarCartaEspecial(carta);
+    }
+
+    private void solicitarColor() {
+        Scanner scanner = new Scanner(System.in);
+        boolean colorValidoIngresado = false;
+
+        while (!colorValidoIngresado) {
+            System.out.println("Elige un color (ROJO, AZUL, VERDE, AMARILLO):");
+            String colorElegido = scanner.next().toUpperCase();
+
+            try {
+                colorValido = Carta.Color.valueOf(colorElegido);
+                colorValidoIngresado = true;
+            } catch (IllegalArgumentException e) {
+                System.out.println("Color ingresado no válido. Intenta de nuevo.");
+            }
+        }
+    }
+
+    private void validarCarta(Carta carta) throws InvalidColorSubmissionException, InvalidValueSubmissionException {
+        if (carta.getColor() != colorValido) {
+            throw new InvalidColorSubmissionException("Movimiento inválido, color esperado: " + colorValido
+                    + " pero se ingresó el color " + carta.getColor(), carta.getColor(), colorValido);
+        } else if (carta.getNumero() != numeroValido) {
+            throw new InvalidValueSubmissionException("Movimiento inválido, número esperado: " + numeroValido
+                    + " pero se ingresó el número " + carta.getNumero(), carta.getNumero(), numeroValido);
+        }
+    }
+
+    private void actualizarTurno() {
+        if (gameDirection == false) {
+            jugadorActual = (jugadorActual + 1) % idJugadores.length;
+        } else if (gameDirection == true) {
+            jugadorActual = (jugadorActual - 1) % idJugadores.length;
+            if (jugadorActual == -1) {
+                jugadorActual = idJugadores.length - 1;
+            }
+        }
+    }
+
+    private void manejarCartaEspecial(Carta carta) {
+        // Lógica para cartas especiales (MASDOS, MASCUATRO, SALTARSE, CAMBIOSENTIDO)...
+        if (carta.getNumero() == Carta.Numero.MASDOS) {
+            manejarMasDos();
+        } else if (carta.getNumero() == Carta.Numero.MASCUATRO) {
+            manejarMasCuatro();
+        } else if (carta.getNumero() == Carta.Numero.SALTARSE) {
+            manejarSaltarse();
+        } else if (carta.getNumero() == Carta.Numero.CAMBIOSENTIDO) {
+            manejarCambiarSentido();
+        }
+    }
+
+    private void manejarMasDos() {
+        String pid = idJugadores[jugadorActual];
+        obtManoJugador(pid).add(mazo.robarCarta());
+        obtManoJugador(pid).add(mazo.robarCarta());
+        System.out.println(pid + " tomó 2 cartas");
+    }
+
+    private void manejarMasCuatro() {
+        String pid = idJugadores[jugadorActual];
+        obtManoJugador(pid).add(mazo.robarCarta());
+        obtManoJugador(pid).add(mazo.robarCarta());
+        obtManoJugador(pid).add(mazo.robarCarta());
+        obtManoJugador(pid).add(mazo.robarCarta());
+        System.out.println(pid + " tomó 4 cartas");
+    }
+
+    private void manejarSaltarse() {
+        System.out.println(idJugadores[jugadorActual] + " fue saltado");
+        actualizarTurno();
+    }
+
+    private void manejarCambiarSentido() {
+        System.out.println("La dirección del juego fue invertida por: " + idJugadores[jugadorActual]);
+        gameDirection ^= true;
+        if (gameDirection == true) {
+            jugadorActual = (jugadorActual - 2) % idJugadores.length;
+            if (jugadorActual == -1) {
+                jugadorActual = idJugadores.length - 1;
+            }
+            if (jugadorActual == -2) {
+                jugadorActual = idJugadores.length - 2;
+            }
+        } else if (gameDirection == false) {
+            jugadorActual = (jugadorActual + 2) % idJugadores.length;
+        }
+    }
+}
 //---------------------------------------
 class InvalidPlayerTurnException extends Exception {
     String id_jugador;
