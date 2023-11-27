@@ -280,10 +280,11 @@ public class Partida {
         esTurno(pid);
 
         ArrayList<Carta> manoJu = obtManoJugador(pid);
-
+//VER ACA, CREO QUE NO ES NECESARIO ESTO
         if (!cartaValida(carta)) {
             if (carta.getColor() == Carta.Color.NEGRO) {
-                solicitarColor();
+                this.colorValido = colorDeclarado;
+                //solicitarColor();
             } else {
                 validarCarta(carta);
             }
@@ -302,14 +303,16 @@ public class Partida {
         }
  */
         numeroValido = carta.getNumero();
-
+        if (carta.getColor() == Carta.Color.NEGRO) {
+                    colorValido = colorDeclarado;
+        }else {
+            colorValido = carta.getColor();
+        }
         actualizarTurno();
 
-        if (carta.getColor() == Carta.Color.NEGRO) {
-            colorValido = colorDeclarado;
-        }
-
         manejarCartaEspecial(carta);
+
+        pila.add(carta);
     }
 
     private void solicitarColor() {

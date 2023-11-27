@@ -14,13 +14,12 @@ public class UnoMenu {
 
         System.out.println("=== MENÚ UNO ===");
         System.out.println("1. Iniciar Juego Manualmente");
-        System.out.println("2. Iniciar Juego Automático");
-        System.out.println("3. Salir");
+        System.out.println("2. Salir");
 
         int opcion = obtenerOpcion(scanner);
 
         switch (opcion) {
-            case 1:
+            case 1 -> {
                 int cantidadJugadores = obtenerCantidadJugadores(scanner);
                 if (cantidadJugadores > 0) {
                     String[] jugadores = obtenerNombresJugadores(scanner, cantidadJugadores);
@@ -28,23 +27,10 @@ public class UnoMenu {
                         controller.iniciarJuego(jugadores);
                     }
                 }
-                break;
-            case 2:
-                int cantidadJugadoresAuto = obtenerCantidadJugadores(scanner);
-                if (cantidadJugadoresAuto > 0) {
-                    String[] jugadoresAuto = obtenerNombresJugadores(scanner, cantidadJugadoresAuto);
-                    if (jugadoresAuto != null) {
-                        controller.iniciarJuegoAutomatico(jugadoresAuto);
-                    }
-                }
-                break;
-            case 3:
-                System.exit(0);
-                break;
-            default:
-                System.out.println("Opción no válida.");
+            }
+            case 2 -> System.exit(0);
+            default -> System.out.println("Opción no válida.");
         }
-
         scanner.close();
     }
 

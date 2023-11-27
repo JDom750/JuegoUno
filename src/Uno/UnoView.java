@@ -25,17 +25,19 @@ public class UnoView {
         System.out.println(partida.levantarCarta());
         System.out.println("\nElige la posición de la carta que deseas jugar (1, 2, 3, ...) o 0 para robar:");
         int opcion = scanner.nextInt();
+        scanner.nextLine();
         if (opcion == 0) {
             controller.tomarCarta(partida.obtenerJugadorActual());
         } else {
             Carta cartaSeleccionada = partida.obtManoJugador(partida.obtenerJugadorActual()).get(opcion - 1);
-
+            System.out.println("La carta seleccionada es: " + cartaSeleccionada.getColor().toString() + " y el numero es: " + cartaSeleccionada.getNumero().toString());
             if (cartaSeleccionada.getColor() != Carta.Color.NEGRO) {
                 controller.jugarCarta(partida.obtenerJugadorActual(), cartaSeleccionada,null);
             } else {
                 // El jugador tiene una carta negra, pregunta por el color
-                System.out.println("Elige un color (ROJO, AZUL, VERDE, AMARILLO):");
+                System.out.println("Elige un color (ROJO, VERDE, AMARILLO, AZUL):");
                 String colorElegido = scanner.next();
+                //scanner.nextLine();
                 Carta.Color colorDeclarado = Carta.Color.valueOf(colorElegido.toUpperCase());
                 controller.jugarCarta(partida.obtenerJugadorActual(), cartaSeleccionada, colorDeclarado);
             }

@@ -62,7 +62,7 @@ public class UnoController {
         }
         return cartas.toString();
     }
-
+/*
     private void jugar() {
         Scanner scanner = new Scanner(System.in);
 
@@ -92,8 +92,49 @@ public class UnoController {
         }
 
         scanner.close();
-    }
+    }*/
+    private void jugar() {
+        Scanner scanner = new Scanner(System.in);
 
+        while (!partida.TerminoElJuego()) {
+            String jugadorActual = partida.obtenerJugadorActual();
+            ArrayList<Carta> mano = partida.obtManoJugador(jugadorActual);
+
+            System.out.println("Turno de: " + jugadorActual);
+            System.out.println("Cartas en mano:\n" + cartasEnMano(jugadorActual, mano));
+            System.out.println("Última carta jugada:\n" + partida.levantarCarta());
+
+            System.out.println("Elige la posición de la carta que deseas jugar (1, 2, 3, ...) o 0 para robar:");
+            int posicion = scanner.nextInt();
+            scanner.nextLine();
+
+            if (posicion == 0) {
+                // El jugador decide robar una carta
+                tomarCarta(jugadorActual);
+            } else {
+                // El jugador decide jugar una carta
+                try {
+                    Carta cartaSeleccionada = mano.get(posicion - 1);
+
+                    if (cartaSeleccionada.getColor() != Carta.Color.NEGRO) {
+                        // La carta no es negra, juega normalmente
+                        this.jugarCarta(jugadorActual, cartaSeleccionada, null);
+                    } else {
+                        // La carta es negra, pregunta por el color
+                        System.out.println("Elige un color (ROJO, VERDE, AMARILLO, AZUL):");
+                        String colorElegido = scanner.next();
+                        Carta.Color colorDeclarado = Carta.Color.valueOf(colorElegido.toUpperCase());
+                        this.jugarCarta(jugadorActual, cartaSeleccionada, colorDeclarado);
+                    }
+
+                } catch (IndexOutOfBoundsException | IllegalArgumentException ex) {
+                    System.out.println("Posición inválida. Intenta de nuevo.");
+                }
+            }
+        }
+
+        scanner.close();
+    }
     private String cartasEnMano(String jugador, ArrayList<Carta> mano) {
         StringBuilder cartas = new StringBuilder();
         for (int i = 0; i < mano.size(); i++) {
