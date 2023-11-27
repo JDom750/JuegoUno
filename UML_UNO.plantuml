@@ -1,0 +1,173 @@
+@startuml
+
+!theme plain
+left to right direction
+skinparam linetype ortho
+
+class Carta {
+  + Carta(Color, Numero): 
+  - color: Color
+  - numero: Numero
+  + getNumero(): Numero
+  + getColor(): Color
+  + toString(): String
+}
+enum Color << enumeration >> {
+  + Color(): 
+  - colores: Color[]
+  + AZUL: 
+  + NEGRO: 
+  + AMARILLO: 
+  + ROJO: 
+  + VERDE: 
+  + valueOf(String): Color
+  + getColor(int): Color
+  + values(): Color[]
+}
+class InvalidColorSubmissionException {
+  + InvalidColorSubmissionException(String, Color, Color): 
+  - actual: Color
+  - esperado: Color
+}
+class InvalidPlayerTurnException {
+  + InvalidPlayerTurnException(String, String): 
+  ~ id_jugador: String
+  + getPid(): String
+}
+class InvalidValueSubmissionException {
+  + InvalidValueSubmissionException(String, Numero, Numero): 
+  - esperado: Numero
+  - actual: Numero
+}
+class Mazo {
+  + Mazo(): 
+  - cartas: Carta[]
+  - cartasEnMazo: int
+  + barajar(): void
+  + reiniciar(): void
+  + reemplazarMazoCon(ArrayList<Carta>): void
+  + estaVacio(): boolean
+  + robarCartas(int): Carta[]
+  + robarImagenCarta(): ImageIcon
+  + robarCarta(): Carta
+}
+enum Numero << enumeration >> {
+  + Numero(): 
+  + NUEVE: 
+  + DOS: 
+  + CERO: 
+  + MASCUATRO: 
+  + OCHO: 
+  + CINCO: 
+  + SALTARSE: 
+  + CUATRO: 
+  - numeros: Numero[]
+  + SIETE: 
+  + CAMBIOSENTIDO: 
+  + UNO: 
+  + MASDOS: 
+  + SEIS: 
+  + CAMBIOCOLOR: 
+  + TRES: 
+  + values(): Numero[]
+  + valueOf(String): Numero
+  + getNumero(int): Numero
+}
+class Partida {
+  + Partida(String[]): 
+  - colorValido: Color
+  - mazo: Mazo
+  - idJugadores: String[]
+  - manos: ArrayList<ArrayList<Carta>>
+  - pila: ArrayList<Carta>
+  ~ gameDirection: boolean
+  - numeroValido: Numero
+  - jugadorActual: int
+  - validarCarta(Carta): void
+  - manejarCartaEspecial(Carta): void
+  + tomarCartaJugador(String, Carta, Color): void
+  - manejarCambiarSentido(): void
+  + obtJugadores(): String[]
+  + tomarCarta(String): void
+  - manejarSaltarse(): void
+  - manejarMasCuatro(): void
+  + robarImagenCarta(): ImageIcon
+  + esTurno(String): void
+  + levantarCarta(): Carta
+  + cartaValida(Carta): boolean
+  - solicitarColor(): void
+  + start(Partida): void
+  + obtCartaJugador(String, int): Carta
+  + tamManoJugador(String): int
+  + obtenerJugadorActual(): String
+  - actualizarTurno(): void
+  + TerminoElJuego(): boolean
+  + manoVacia(String): boolean
+  + jugadorAnterior(int): String
+  - manejarMasDos(): void
+  + setColorDeCarta(Color): void
+  + obtManoJugador(String): ArrayList<Carta>
+}
+class Uno {
+  + Uno(): 
+}
+class UnoController {
+  + UnoController(): 
+  - partida: Partida
+  - vista: UnoView
+  + iniciarJuego(String[]): void
+  + jugarCarta(String, Carta, Color): void
+  - tirarCartaAutomatica(): void
+  + iniciarJuegoAutomatico(String[]): void
+  - cartasEnMano(String): String
+  + tomarCarta(String): void
+  - cartasEnMano(String, ArrayList<Carta>): String
+  - jugar(): void
+  - mostrarInfo(): void
+  - distribuirCartas(): void
+  - mostrarMensajeError(String, String): void
+  + getPartida(): Partida
+}
+class UnoMenu {
+  + UnoMenu(): 
+  - obtenerNombresJugadores(Scanner, int): String[]?
+  + main(String[]): void
+  + mostrarMenuInicio(UnoController): void
+  - obtenerOpcion(Scanner): int
+  - obtenerCantidadJugadores(Scanner): int
+}
+class UnoView {
+  + UnoView(Partida, UnoController): 
+  - partida: Partida
+  - controller: UnoController
+  - scanner: Scanner
+  - cartasEnMano(String): String
+  + actualizar(): void
+}
+
+Carta                           "1" *-[#595959,plain]-> "color\n1" Color                           
+Carta                           "1" *-[#595959,plain]-> "numero\n1" Numero                          
+Color                            +-[#820000,plain]-  Carta                           
+InvalidColorSubmissionException "1" *-[#595959,plain]-> "esperado\n1" Color                           
+InvalidValueSubmissionException "1" *-[#595959,plain]-> "esperado\n1" Numero                          
+Mazo                             -[#595959,dashed]->  Carta                           : "«create»"
+Mazo                            "1" *-[#595959,plain]-> "cartas\n*" Carta                           
+Mazo                             -[#595959,dashed]->  Numero                          : "«create»"
+Numero                           +-[#820000,plain]-  Carta                           
+Partida                         "1" *-[#595959,plain]-> "pila\n*" Carta                           
+Partida                          -[#595959,dashed]->  Carta                           : "«create»"
+Partida                         "1" *-[#595959,plain]-> "colorValido\n1" Color                           
+Partida                          -[#595959,dashed]->  InvalidColorSubmissionException : "«create»"
+Partida                          -[#595959,dashed]->  InvalidPlayerTurnException      : "«create»"
+Partida                          -[#595959,dashed]->  InvalidValueSubmissionException : "«create»"
+Partida                          -[#595959,dashed]->  Mazo                            : "«create»"
+Partida                         "1" *-[#595959,plain]-> "mazo\n1" Mazo                            
+Partida                         "1" *-[#595959,plain]-> "numeroValido\n1" Numero                          
+UnoController                    -[#595959,dashed]->  Partida                         : "«create»"
+UnoController                   "1" *-[#595959,plain]-> "partida\n1" Partida                         
+UnoController                   "1" *-[#595959,plain]-> "vista\n1" UnoView                         
+UnoController                    -[#595959,dashed]->  UnoView                         : "«create»"
+UnoMenu                          -[#595959,dashed]->  UnoController                   : "«create»"
+UnoView                         "1" *-[#595959,plain]-> "partida\n1" Partida                         
+UnoView                         "1" *-[#595959,plain]-> "controller\n1" UnoController                   
+@enduml
